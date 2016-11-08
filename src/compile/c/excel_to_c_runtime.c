@@ -102,6 +102,7 @@ static ExcelValue right_1(ExcelValue string_v);
 static ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue excel_int(ExcelValue number_v);
+static ExcelValue excel_sqrt(ExcelValue number_v);
 static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue subtotal(ExcelValue type, int number_of_arguments, ExcelValue *arguments);
 static ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments);
@@ -1719,6 +1720,15 @@ static ExcelValue excel_int(ExcelValue number_v) {
 	CHECK_FOR_CONVERSION_ERROR
 		
 	return EXCEL_NUMBER(floor(number));
+}
+
+static ExcelValue excel_sqrt(ExcelValue number_v) {
+    CHECK_FOR_PASSED_ERROR(number_v)
+
+    NUMBER(number_v, number)
+    CHECK_FOR_CONVERSION_ERROR
+
+    return EXCEL_NUMBER(sqrt(number));
 }
 
 static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
