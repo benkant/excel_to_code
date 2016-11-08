@@ -1797,7 +1797,6 @@ static ExcelValue excel_int(ExcelValue number_v) {
 	return EXCEL_NUMBER(floor(number));
 }
 
-<<<<<<< HEAD
 static ExcelValue excel_sqrt(ExcelValue number_v) {
     CHECK_FOR_PASSED_ERROR(number_v)
 
@@ -1805,7 +1804,8 @@ static ExcelValue excel_sqrt(ExcelValue number_v) {
     CHECK_FOR_CONVERSION_ERROR
 
     return EXCEL_NUMBER(sqrt(number));
-=======
+}
+
 static ExcelValue slope(ExcelValue known_y, ExcelValue known_x) {
   if(known_x.type != ExcelRange) { return NA; }
   if(known_y.type != ExcelRange) { return NA; }
