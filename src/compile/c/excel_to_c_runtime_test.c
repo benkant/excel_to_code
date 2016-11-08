@@ -98,6 +98,27 @@ int test_functions() {
   assert(not_equal(EXCEL_STRING("1"), ONE).number == true);
   assert(not_equal(DIV0, ONE).type == ExcelError);
 
+  // Test intercept
+  // 5x1 vectors
+  ExcelValue intercept_known_y_1[] = {EXCEL_NUMBER(2), EXCEL_NUMBER(3), EXCEL_NUMBER(9), EXCEL_NUMBER(1), EXCEL_NUMBER(8)};
+  ExcelValue intercept_known_y_1_v = EXCEL_RANGE(intercept_known_y_1, 5, 1);
+  ExcelValue intercept_known_x_1[] = {EXCEL_NUMBER(6), EXCEL_NUMBER(5), EXCEL_NUMBER(11), EXCEL_NUMBER(7), EXCEL_NUMBER(5)};
+  ExcelValue intercept_known_x_1_v = EXCEL_RANGE(intercept_known_x_1, 5, 1);
+  ExcelValue intercept_1 = intercept(intercept_known_y_1_v, intercept_known_x_1_v);
+  printf("%f\n", intercept_1.number);
+  assert(intercept_1.number >= 0.04838657 && intercept_1.number <= 0.04838658);
+  // 3x2 matrix
+  ExcelValue intercept_known_y_2[] = {EXCEL_NUMBER(2), EXCEL_NUMBER(3), EXCEL_NUMBER(9), EXCEL_NUMBER(1), EXCEL_NUMBER(8), BLANK};
+  ExcelValue intercept_known_y_2_v = EXCEL_RANGE(intercept_known_y_2, 3, 2);
+  ExcelValue intercept_known_x_2[] = {EXCEL_NUMBER(6), EXCEL_NUMBER(5), EXCEL_NUMBER(11), EXCEL_NUMBER(7), EXCEL_NUMBER(5), BLANK};
+  ExcelValue intercept_known_x_2_v = EXCEL_RANGE(intercept_known_x_2, 3, 2);
+  ExcelValue intercept_2 = intercept(intercept_known_y_2_v, intercept_known_x_2_v);
+  printf("%f\n", intercept_2.number);
+  assert(intercept_2.number >= 0.04838657 && intercept_2.number <= 0.04838658);
+  // Test scalars
+  assert(intercept(EXCEL_NUMBER(0), EXCEL_NUMBER(1)).type == ExcelError);
+  // TODO and more
+
   // Test excel_if
   // Two argument version
   assert(excel_if_2(TRUE,EXCEL_NUMBER(10)).type == ExcelNumber);
