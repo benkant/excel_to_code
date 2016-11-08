@@ -819,6 +819,13 @@ int test_functions() {
   assert(mmult_result_5_a[2].type == ExcelError);
   assert(mmult_result_5_a[3].type == ExcelError);
 
+  // Test RANDOM
+  ExcelValue excel_rand_result_0 = excel_rand();
+  assert(excel_rand_result_0.number >= 0);
+  assert(excel_rand_result_0.number <= 1);
+  ExcelValue excel_rand_result_1 = excel_rand();
+  assert(excel_rand_result_0.number != excel_rand_result_1.number);
+
   // Test the RANK() function
   ExcelValue rank_1_a[] = { FIVE, BLANK, THREE, ONE, ONE, FOUR, FIVE, TRUE, SIX, EXCEL_STRING("Hi")};
   ExcelValue rank_2_a[] = { FIVE, BLANK, THREE, NA, ONE, FOUR, FIVE, TRUE, SIX, EXCEL_STRING("Hi")};

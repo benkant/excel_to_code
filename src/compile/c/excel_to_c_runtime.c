@@ -95,6 +95,7 @@ static ExcelValue pv_3(ExcelValue a_v, ExcelValue b_v, ExcelValue c_v);
 static ExcelValue pv_4(ExcelValue a_v, ExcelValue b_v, ExcelValue c_v, ExcelValue d_v);
 static ExcelValue pv_5(ExcelValue a_v, ExcelValue b_v, ExcelValue c_v, ExcelValue d_v, ExcelValue e_v);
 static ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v);
+static ExcelValue excel_rand();
 static ExcelValue rank(ExcelValue number_v, ExcelValue range_v, ExcelValue order_v);
 static ExcelValue rank_2(ExcelValue number_v, ExcelValue range_v);
 static ExcelValue right(ExcelValue string_v, ExcelValue number_of_characters_v);
@@ -1628,6 +1629,11 @@ static ExcelValue power(ExcelValue a_v, ExcelValue b_v) {
     return EXCEL_NUMBER(result);
   }
 }
+
+static ExcelValue excel_rand() {
+    return EXCEL_NUMBER((double)rand() / (double)((unsigned)RAND_MAX + 1));
+}
+
 static ExcelValue rank(ExcelValue number_v, ExcelValue range_v, ExcelValue order_v) {
   CHECK_FOR_PASSED_ERROR(number_v)
   CHECK_FOR_PASSED_ERROR(range_v)

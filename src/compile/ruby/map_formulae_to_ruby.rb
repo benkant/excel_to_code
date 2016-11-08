@@ -60,6 +60,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'PMT' => 'pmt',
     :'POWER' => 'power',
     :'PV' => 'pv',
+    :'RAND' => 'rand',
     :'RANK' => 'rank',
     :'RIGHT' => 'right',
     :'ROUND' => 'round',
