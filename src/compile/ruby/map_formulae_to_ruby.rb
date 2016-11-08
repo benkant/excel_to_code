@@ -68,6 +68,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'ROUNDDOWN' => 'rounddown',
     :'ROUNDUP' => 'roundup',
     :'SQRT' => 'sqrt',
+    :'SLOPE' => 'slope',
     :'SUBSTITUTE' => 'substitute',
     :'SUBTOTAL' => 'subtotal',
     :'SUM' => 'sum',

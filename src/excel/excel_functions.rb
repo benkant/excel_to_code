@@ -129,3 +129,5 @@ require_relative 'excel_functions/rand'
 require_relative 'excel_functions/sqrt'
 
 require_relative 'excel_functions/intercept'
+
+require_relative 'excel_functions/slope'

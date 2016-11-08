@@ -477,12 +477,32 @@ int test_functions() {
   assert(roundup(EXCEL_NUMBER(1.56),EXCEL_NUMBER(1)).number == 1.6);
   assert(roundup(EXCEL_NUMBER(-1.56),EXCEL_NUMBER(1)).number == -1.6);	
 
+<<<<<<< HEAD
   // Test sqrt
   assert(excel_sqrt(EXCEL_NUMBER(0)).number == 0);
   assert(excel_sqrt(EXCEL_NUMBER(1)).number == 1);
   double sqrt_2 = excel_sqrt(EXCEL_NUMBER(2)).number;
   assert(sqrt_2 > 1.414 && sqrt_2 < 1.415);
   assert(excel_sqrt(EXCEL_NUMBER(16)).number == 4);
+=======
+  // Test slope
+  // 5x1 vectors
+  ExcelValue slope_known_y_1[] = {EXCEL_NUMBER(2), EXCEL_NUMBER(3), EXCEL_NUMBER(9), EXCEL_NUMBER(1), EXCEL_NUMBER(8)};
+  ExcelValue slope_known_y_1_v = EXCEL_RANGE(slope_known_y_1, 5, 1);
+  ExcelValue slope_known_x_1[] = {EXCEL_NUMBER(6), EXCEL_NUMBER(5), EXCEL_NUMBER(11), EXCEL_NUMBER(7), EXCEL_NUMBER(5)};
+  ExcelValue slope_known_x_1_v = EXCEL_RANGE(slope_known_x_1, 5, 1);
+  ExcelValue slope_1 = slope(slope_known_y_1_v, slope_known_x_1_v);
+  assert(slope_1.number >= 0.669354 && slope_1.number <= 0.669355);
+  // 3x2 matrix
+  ExcelValue slope_known_y_2[] = {EXCEL_NUMBER(2), EXCEL_NUMBER(3), EXCEL_NUMBER(9), EXCEL_NUMBER(1), EXCEL_NUMBER(8), BLANK};
+  ExcelValue slope_known_y_2_v = EXCEL_RANGE(slope_known_y_2, 3, 2);
+  ExcelValue slope_known_x_2[] = {EXCEL_NUMBER(6), EXCEL_NUMBER(5), EXCEL_NUMBER(11), EXCEL_NUMBER(7), EXCEL_NUMBER(5), BLANK};
+  ExcelValue slope_known_x_2_v = EXCEL_RANGE(slope_known_x_2, 3, 2);
+  ExcelValue slope_2 = slope(slope_known_y_2_v, slope_known_x_2_v);
+  assert(slope_2.number >= 0.669354 && slope_2.number <= 0.669355);
+  // Test scalars
+  assert(slope(EXCEL_NUMBER(0), EXCEL_NUMBER(1)).type == ExcelError);
+  // TODO and more
 
   // Test string joining
   ExcelValue string_join_array_1[] = {EXCEL_STRING("Hello "), EXCEL_STRING("world")};

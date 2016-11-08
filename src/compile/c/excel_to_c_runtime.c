@@ -105,6 +105,7 @@ static ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue excel_int(ExcelValue number_v);
 static ExcelValue excel_sqrt(ExcelValue number_v);
+static ExcelValue slope(ExcelValue known_y, ExcelValue known_x);
 static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue subtotal(ExcelValue type, int number_of_arguments, ExcelValue *arguments);
 static ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments);
@@ -1796,6 +1797,7 @@ static ExcelValue excel_int(ExcelValue number_v) {
 	return EXCEL_NUMBER(floor(number));
 }
 
+<<<<<<< HEAD
 static ExcelValue excel_sqrt(ExcelValue number_v) {
     CHECK_FOR_PASSED_ERROR(number_v)
 
@@ -1803,6 +1805,70 @@ static ExcelValue excel_sqrt(ExcelValue number_v) {
     CHECK_FOR_CONVERSION_ERROR
 
     return EXCEL_NUMBER(sqrt(number));
+=======
+static ExcelValue slope(ExcelValue known_y, ExcelValue known_x) {
+  if(known_x.type != ExcelRange) { return NA; }
+  if(known_y.type != ExcelRange) { return NA; }
+
+  int known_x_size = known_x.rows * known_x.columns;
+  int known_y_size = known_y.rows * known_y.columns;
+
+  if(known_x_size != known_y_size) { return NA; }
+  if(known_x_size < 2) { return NA; }
+
+  int i;
+  ExcelValue *x_array, *y_array;
+  ExcelValue vx, vy;
+
+  x_array = known_x.array;
+  y_array = known_y.array;
+
+  for(i=0; i<known_x_size; i++) {
+    vx = x_array[i];
+    if(vx.type == ExcelError) {
+      return vx;
+    }
+  }
+
+  for(i=0; i<known_x_size; i++) {
+    vy = y_array[i];
+    if(vy.type == ExcelError) {
+      return vy;
+    }
+  }
+
+  // y` = y sample mean, x` = x sample mean
+  // intercept a = y` - b * x`
+  // where b = slope = sum((x-x`)(y-y`))/sum((x-x`)^2)
+  ExcelValue mean_y = average(1, &known_y);
+  ExcelValue mean_x = average(1, &known_x);
+
+  if(mean_y.type == ExcelError) { return VALUE; }
+  if(mean_x.type == ExcelError) { return VALUE; }
+
+  float mx = mean_x.number;
+  float my = mean_y.number;
+
+  float b_numerator, b_denominator, b, a;
+  
+  b_denominator = 0;
+  b_numerator = 0;
+
+  for(i=0; i<known_x_size; i++) {
+    vx = x_array[i];
+    vy = y_array[i];
+    if(vx.type != ExcelNumber) { continue; }
+    if(vy.type != ExcelNumber) { continue; }
+
+    b_numerator = b_numerator + (vx.number - mx)*(vy.number - my);
+    b_denominator = b_denominator + pow(vx.number - mx, 2);
+  }
+  
+  if(b_denominator == 0) { return DIV0; }
+
+  b = b_numerator / b_denominator;
+
+  return EXCEL_NUMBER(b);
 }
 
 static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
