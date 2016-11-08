@@ -127,3 +127,5 @@ require_relative 'excel_functions/number_or_zero'
 require_relative 'excel_functions/rand'
 
 require_relative 'excel_functions/sqrt'
+
+require_relative 'excel_functions/intercept'

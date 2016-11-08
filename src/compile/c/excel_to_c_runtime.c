@@ -69,6 +69,7 @@ static ExcelValue iserr(ExcelValue value);
 static ExcelValue iserror(ExcelValue value);
 static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue column_number_v);
 static ExcelValue excel_index_2(ExcelValue array_v, ExcelValue row_number_v);
+static ExcelValue intercept(ExcelValue known_y, ExcelValue known_x);
 static ExcelValue excel_isnumber(ExcelValue number);
 static ExcelValue excel_isblank(ExcelValue value);
 static ExcelValue forecast(ExcelValue required_x, ExcelValue known_y, ExcelValue known_x);
@@ -638,6 +639,73 @@ static ExcelValue not_equal(ExcelValue a_v, ExcelValue b_v) {
 	}
 	return result;
 }
+
+static ExcelValue intercept(ExcelValue known_y, ExcelValue known_x) {
+  if(known_x.type != ExcelRange) { return NA; }
+  if(known_y.type != ExcelRange) { return NA; }
+
+  int known_x_size = known_x.rows * known_x.columns;
+  int known_y_size = known_y.rows * known_y.columns;
+
+  if(known_x_size != known_y_size) { return NA; }
+  if(known_x_size < 2) { return NA; }
+
+  int i;
+  ExcelValue *x_array, *y_array;
+  ExcelValue vx, vy;
+
+  x_array = known_x.array;
+  y_array = known_y.array;
+
+  for(i=0; i<known_x_size; i++) {
+    vx = x_array[i];
+    if(vx.type == ExcelError) {
+      return vx;
+    }
+  }
+
+  for(i=0; i<known_x_size; i++) {
+    vy = y_array[i];
+    if(vy.type == ExcelError) {
+      return vy;
+    }
+  }
+
+  // y` = y sample mean, x` = x sample mean
+  // intercept a = y` - b * x`
+  // where b = slope = sum((x-x`)(y-y`))/sum((x-x`)^2)
+  ExcelValue mean_y = average(1, &known_y);
+  ExcelValue mean_x = average(1, &known_x);
+
+  if(mean_y.type == ExcelError) { return VALUE; }
+  if(mean_x.type == ExcelError) { return VALUE; }
+
+  float mx = mean_x.number;
+  float my = mean_y.number;
+
+  float b_numerator, b_denominator, b, a;
+  
+  b_denominator = 0;
+  b_numerator = 0;
+
+  for(i=0; i<known_x_size; i++) {
+    vx = x_array[i];
+    vy = y_array[i];
+    if(vx.type != ExcelNumber) { continue; }
+    if(vy.type != ExcelNumber) { continue; }
+
+    b_numerator = b_numerator + (vx.number - mx)*(vy.number - my);
+    b_denominator = b_denominator + pow(vx.number - mx, 2);
+  }
+  
+  if(b_denominator == 0) { return DIV0; }
+
+  b = b_numerator / b_denominator;
+  a = my - b * mx;
+
+  return EXCEL_NUMBER(a);
+}
+
 
 static ExcelValue excel_isnumber(ExcelValue potential_number) {
   if(potential_number.type == ExcelNumber) {
