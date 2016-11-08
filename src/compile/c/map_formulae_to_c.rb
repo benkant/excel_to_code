@@ -84,6 +84,7 @@ class MapFormulaeToC < MapValuesToC
     :'ROUND' => 'excel_round',
     :'ROUNDDOWN' => 'rounddown',
     :'ROUNDUP' => 'roundup',
+    :'SQRT' => 'excel_sqrt',
     :'string_join' => 'string_join',
     :'SUBTOTAL' => 'subtotal',
     :'SUM' => 'sum',

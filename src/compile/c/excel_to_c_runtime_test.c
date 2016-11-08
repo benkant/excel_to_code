@@ -456,6 +456,13 @@ int test_functions() {
   assert(roundup(EXCEL_NUMBER(1.56),EXCEL_NUMBER(1)).number == 1.6);
   assert(roundup(EXCEL_NUMBER(-1.56),EXCEL_NUMBER(1)).number == -1.6);	
 
+  // Test sqrt
+  assert(excel_sqrt(EXCEL_NUMBER(0)).number == 0);
+  assert(excel_sqrt(EXCEL_NUMBER(1)).number == 1);
+  double sqrt_2 = excel_sqrt(EXCEL_NUMBER(2)).number;
+  assert(sqrt_2 > 1.414 && sqrt_2 < 1.415);
+  assert(excel_sqrt(EXCEL_NUMBER(16)).number == 4);
+
   // Test string joining
   ExcelValue string_join_array_1[] = {EXCEL_STRING("Hello "), EXCEL_STRING("world")};
   ExcelValue string_join_array_2[] = {EXCEL_STRING("Hello "), EXCEL_STRING("world"), EXCEL_STRING("!")};
