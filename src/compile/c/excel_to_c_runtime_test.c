@@ -76,6 +76,95 @@ int test_functions() {
   assert(counta(7, count_a_test_array_1).number == 6);
   assert(counta(2, count_a_test_array_2).number == 7);
 
+  // Test COUNTIFS function
+  ExcelValue countifs_array_1[] = {EXCEL_NUMBER(10),EXCEL_NUMBER(100),BLANK};
+  ExcelValue countifs_array_1_v = EXCEL_RANGE(countifs_array_1,3,1);
+  ExcelValue countifs_array_2[] = {EXCEL_STRING("pear"),EXCEL_STRING("bear"),EXCEL_STRING("apple")};
+  ExcelValue countifs_array_2_v = EXCEL_RANGE(countifs_array_2,3,1);
+  ExcelValue countifs_array_3[] = {EXCEL_NUMBER(1),EXCEL_NUMBER(2),EXCEL_NUMBER(3),EXCEL_NUMBER(4),EXCEL_NUMBER(5),EXCEL_NUMBER(5)};
+  ExcelValue countifs_array_3_v = EXCEL_RANGE(countifs_array_3,6,1);
+  ExcelValue countifs_array_4[] = {EXCEL_STRING("CO2"),EXCEL_STRING("CH4"),EXCEL_STRING("N2O"),EXCEL_STRING("CH4"),EXCEL_STRING("N2O"),EXCEL_STRING("CO2")};
+  ExcelValue countifs_array_4_v = EXCEL_RANGE(countifs_array_4,6,1);
+  ExcelValue countifs_array_5[] = {EXCEL_STRING("1A"),EXCEL_STRING("1A"),EXCEL_STRING("1A"),EXCEL_NUMBER(4),EXCEL_NUMBER(4),EXCEL_NUMBER(5)};
+  ExcelValue countifs_array_5_v = EXCEL_RANGE(countifs_array_5,6,1);
+
+  // ... should only count values that meet all of the criteria
+  ExcelValue countifs_array_6[] = { countifs_array_1_v, EXCEL_NUMBER(10), countifs_array_2_v, EXCEL_STRING("Bear") };
+  assert(countifs(countifs_array_1_v,4,countifs_array_6).number == 0.0);
+
+  ExcelValue countifs_array_7[] = { countifs_array_1_v, EXCEL_NUMBER(10), countifs_array_2_v, EXCEL_STRING("Pear") };
+  ExcelValue r1 = countifs(countifs_array_1_v,4,countifs_array_7);
+  assert(r1.number == 1);
+
+  // ... should work when single cells are given where ranges expected
+  ExcelValue countifs_array_8[] = { EXCEL_STRING("CAR"), EXCEL_STRING("CAR"), EXCEL_STRING("FCV"), EXCEL_STRING("FCV")};
+  assert(countifs(EXCEL_NUMBER(0.143897265452564), 4, countifs_array_8).number == 1);
+
+  // ... should match numbers with strings that contain numbers
+  ExcelValue countifs_array_9[] = { EXCEL_NUMBER(10), EXCEL_STRING("10.0")};
+  assert(countifs(EXCEL_NUMBER(100),2,countifs_array_9).number == 1);
+
+  ExcelValue countifs_array_9b[] = { EXCEL_STRING("10"), EXCEL_NUMBER(10.0)};
+  assert(countifs(EXCEL_NUMBER(100),2,countifs_array_9b).number == 1);
+
+  ExcelValue countifs_array_10[] = { countifs_array_4_v, EXCEL_STRING("CO2"), countifs_array_5_v, EXCEL_NUMBER(2)};
+  assert(countifs(countifs_array_3_v,4, countifs_array_10).number == 0);
+
+  // ... should match with strings that contain criteria
+  ExcelValue countifs_array_10a[] = { countifs_array_3_v, EXCEL_STRING("=5")};
+  assert(countifs(countifs_array_3_v,2, countifs_array_10a).number == 2);
+
+  ExcelValue countifs_array_10b[] = { countifs_array_3_v, EXCEL_STRING("<>3")};
+  assert(countifs(countifs_array_3_v,2, countifs_array_10b).number == 5);
+
+  ExcelValue countifs_array_10c[] = { countifs_array_3_v, EXCEL_STRING("<3")};
+  assert(countifs(countifs_array_3_v,2, countifs_array_10c).number == 2);
+
+  ExcelValue countifs_array_10d[] = { countifs_array_3_v, EXCEL_STRING("<=3")};
+  assert(countifs(countifs_array_3_v,2, countifs_array_10d).number == 3);
+
+  ExcelValue countifs_array_10e[] = { countifs_array_3_v, EXCEL_STRING(">3")};
+  assert(countifs(countifs_array_3_v,2, countifs_array_10e).number == 3);
+
+  ExcelValue countifs_array_10f[] = { countifs_array_3_v, EXCEL_STRING(">=3")};
+  ExcelValue r2 = countifs(countifs_array_3_v,2, countifs_array_10f);
+  assert(r2.number == 4);
+
+  // ... BLANK in check range should match empty strings, BLANK in criteria should match zero
+  ExcelValue countifs_array_11[] = { BLANK, EXCEL_NUMBER(0)};
+  assert(countifs(EXCEL_NUMBER(100),2,countifs_array_11).number == 0);
+
+  ExcelValue countifs_array_11b[] = { BLANK, EXCEL_STRING("")};
+  assert(countifs(EXCEL_NUMBER(100),2,countifs_array_11b).number == 1);
+
+  ExcelValue countifs_array_11c[] = { EXCEL_STRING(""), BLANK};
+  assert(countifs(EXCEL_NUMBER(100),2,countifs_array_11c).number == 0);
+
+  ExcelValue countifs_array_12[] = {EXCEL_NUMBER(0), BLANK};
+  assert(countifs(EXCEL_NUMBER(100),2,countifs_array_12).number == 1);
+
+  ExcelValue countifs_array_13[] = {BLANK, BLANK};
+  assert(countifs(EXCEL_NUMBER(100),2,countifs_array_13).number == 0);
+
+  ExcelValue countifs_array_14[] = {EXCEL_NUMBER(10), BLANK};
+  assert(countifs(EXCEL_NUMBER(100),2,countifs_array_14).number == 0);
+
+  // ... should return an error if range argument is an error
+  //ExcelValue countifs_array_15[] = {ONE, ONE};
+  //assert(countifs(REF,2,countifs_array_15).type == ExcelError);
+
+
+  // Test COUNTIF
+  // ... where there is only a check range
+  assert(countif_2(countifs_array_1_v,EXCEL_STRING(">0")).number == 2);
+  assert(countif_2(countifs_array_1_v,EXCEL_STRING(">10")).number == 1);
+  assert(countif_2(countifs_array_1_v,EXCEL_STRING("<100")).number == 1);
+
+  // ... where there is a seprate count range
+  ExcelValue countif_array_1[] = {EXCEL_NUMBER(15),EXCEL_NUMBER(20), EXCEL_NUMBER(30)};
+  ExcelValue countif_array_1_v = EXCEL_RANGE(countif_array_1,3,1);
+  assert(countif(countifs_array_1_v,EXCEL_STRING("10"),countif_array_1_v).number == 1);
+
   // Test divide
   assert(divide(EXCEL_NUMBER(12.4),EXCEL_NUMBER(3.2)).number == 3.875);
   assert(divide(EXCEL_NUMBER(12.4),EXCEL_NUMBER(0)).type == ExcelError);

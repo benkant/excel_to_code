@@ -6,7 +6,7 @@ describe "ExcelFunctions: AVERAGEIFS" do
     FunctionTest.averageifs([[10],[100],[nil]],[[10],[100],[nil]],10.0,[["pear"],["bear"],["apple"]],'Bear').should == :div0
     FunctionTest.averageifs([[10],[100],[nil]],[[10],[100],[nil]],10.0,[["pear"],["bear"],["apple"]],'Pear').should == 10.0
   end
-  
+
   it "should work when single cells are given where ranges expected" do
     FunctionTest.averageifs(0.143897265452564, "CAR", "CAR", "FCV", "FCV").should == 0.143897265452564
   end

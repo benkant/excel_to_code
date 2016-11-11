@@ -51,6 +51,10 @@ struct excel_comparison {
 typedef struct excel_comparison ExcelComparison;
 
 // Headers
+
+static ExcelValue countifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments);
+static ExcelValue countif(ExcelValue check_range_v, ExcelValue criteria_v, ExcelValue sum_range_v );
+static ExcelValue countif_2(ExcelValue check_range_v, ExcelValue criteria_v);
 static ExcelValue more_than(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue more_than_or_equal(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue not_equal(ExcelValue a_v, ExcelValue b_v);
@@ -2073,6 +2077,21 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
   // Tidy up
   free(criteria);
   return EXCEL_RANGE(filtered_range, number_of_filtered_values, 1);
+}
+
+static ExcelValue countifs(ExcelValue count_range_v, int number_of_arguments, ExcelValue *arguments) {
+  ExcelValue filtered_range = filter_range(count_range_v, number_of_arguments, arguments);
+  return count(1,&filtered_range);
+}
+
+static ExcelValue countif(ExcelValue check_range_v, ExcelValue criteria_v, ExcelValue count_range_v ) {
+	ExcelValue tmp_array_countif[] = {check_range_v, criteria_v};
+	return countifs(count_range_v,2,tmp_array_countif);
+}
+
+static ExcelValue countif_2(ExcelValue check_range_v, ExcelValue criteria_v) {
+	ExcelValue tmp_array_countif2[] = {check_range_v, criteria_v};
+	return countifs(check_range_v,2,tmp_array_countif2);
 }
 
 static ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments) {

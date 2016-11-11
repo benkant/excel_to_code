@@ -28,6 +28,8 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'COSH' => 'cosh',
     :'COUNT' => 'count',
     :'COUNTA' => 'counta',
+    :'COUNTIF' => 'countif',
+    :'COUNTIFS' => 'countifs',
     :'ENSURE_IS_NUMBER' => 'ensure_is_number',
     :'EXP' => 'exp',
     :'FIND' => 'find',

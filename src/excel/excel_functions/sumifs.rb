@@ -4,7 +4,7 @@ module ExcelFunctions
     # Sort out the sum range
     range = [range] unless range.is_a?(Array)
     range = range.flatten
-    
+
     indexes = _filtered_range_indexes(range, *criteria)
     return indexes if indexes.is_a?(Symbol)
     range.values_at(*indexes)
@@ -83,6 +83,8 @@ module ExcelFunctions
   end
   
   def sumifs(range,*criteria)
+    require 'pry'
+    binding.pry
     filtered = _filtered_range(range,*criteria)
     sum(*filtered)
   end
