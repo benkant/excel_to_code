@@ -131,3 +131,7 @@ require_relative 'excel_functions/sqrt'
 require_relative 'excel_functions/intercept'
 
 require_relative 'excel_functions/slope'
+
+require_relative 'excel_functions/countif'
+
+require_relative 'excel_functions/countifs'
