@@ -274,7 +274,6 @@ class MapFormulaeToValues
     end
   end
 
-
   # [:function, "COUNT", range]
   def map_count(ast)
     values = ast[2..-1].map { |a| value(a, nil) }
@@ -282,6 +281,74 @@ class MapFormulaeToValues
     ast.replace(formula_value( ast[1],*values))
   end
   
+  def map_countifs(ast)
+    values = ast[3..-1].map.with_index { |a,i| value(a, (i % 2) == 0 ? 0 : nil ) }
+    return if values.all? { |a| a == :not_a_value } # Nothing to be done
+    return attempt_to_reduce_countifs(ast) if values.any? { |a| a == :not_a_value } # Maybe a reduction to be done
+    return unless OK_CHECK_RANGE_TYPES.include?(ast[2].first)
+    count_value = value(ast[2])
+    if count_value == :not_a_value # i.e., a sheet_reference, :cell or :area
+      partially_map_countifs(ast)
+    else
+      ast.replace(formula_value( ast[1], count_value, *values))
+    end
+  end
+
+  def partially_map_countifs(ast)
+    values = ast[3..-1].map.with_index { |a,i| value(a, (i % 2) == 0 ? 0 : nil ) }
+    count_range = array_as_values(ast[2]).flatten(1)
+    indexes = @calculator._filtered_range_indexes(count_range, *values)
+    if indexes.is_a?(Symbol)
+      new_ast = ast_for_value(indexes)
+    elsif indexes.empty?
+      new_ast = [:number, 0]
+    else
+      new_ast = [:function, :COUNT, *count_range.values_at(*indexes)]
+    end
+    if new_ast != ast
+      @replacements_made_in_the_last_pass += 1
+      ast.replace(new_ast)
+    end
+  end
+
+  # FIXME: Ends up making everything single column. Is that ok?!
+  def attempt_to_reduce_countifs(ast)
+    return unless OK_CHECK_RANGE_TYPES.include?(ast[2].first)
+    # First combine into a series of checks
+    criteria_that_can_be_resolved = []
+    criteria_that_cant_be_resolved = []
+    ast[3..-1].each_slice(2) do |check|
+      # Give up unless we have something that can actually be used
+      return unless OK_CHECK_RANGE_TYPES.include?(check[0].first)
+      check_range_value = value(check[0])
+      check_criteria_value = value(check[1])
+      if check_range_value == :not_a_value || check_criteria_value == :not_a_value
+        criteria_that_cant_be_resolved << check
+      else
+        criteria_that_can_be_resolved << [check_range_value, check_criteria_value]
+      end
+    end
+    return if criteria_that_can_be_resolved.empty?
+    count_range = array_as_values(ast[2]).flatten(1)
+    indexes = @calculator._filtered_range_indexes(count_range, *criteria_that_can_be_resolved.flatten(1))
+    if indexes.is_a?(Symbol)
+      return
+    elsif indexes.empty?
+      new_ast = [:number, 0]
+    else
+      new_ast = [:function, :COUNTIFS]
+      new_ast << ast_for_array(count_range.values_at(*indexes))
+      criteria_that_cant_be_resolved.each do |check|
+        new_ast << ast_for_array(array_as_values(check.first).flatten(1).values_at(*indexes))
+        new_ast << check.last
+      end
+    end
+    if new_ast != ast
+      @replacements_made_in_the_last_pass += 1
+      ast.replace(new_ast)
+    end
+  end
+
   # [:function, "INDEX", array, row_number, column_number]
   def map_index(ast)
     return map_index_with_only_two_arguments(ast) if ast.length == 4

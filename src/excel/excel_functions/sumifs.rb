@@ -83,8 +83,6 @@ module ExcelFunctions
   end
   
   def sumifs(range,*criteria)
-    require 'pry'
-    binding.pry
     filtered = _filtered_range(range,*criteria)
     sum(*filtered)
   end

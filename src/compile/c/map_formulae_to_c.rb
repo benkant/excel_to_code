@@ -37,6 +37,9 @@ class MapFormulaeToC < MapValuesToC
     :'COSH' => 'cosh',
     :'COUNT' => 'count',
     :'COUNTA' => 'counta',
+    :'COUNTIF2' => 'countif_2',
+    :'COUNTIF3' => 'countif',
+    :'COUNTIFS' => 'countifs',
     :'ENSURE_IS_NUMBER' => 'ensure_is_number',
     :'EXP' => 'excel_exp',
     :'FIND2' => 'find_2',
@@ -156,6 +159,10 @@ class MapFormulaeToC < MapValuesToC
   
   def function_subtotal(type,*arguments)
     "#{FUNCTIONS[:SUBTOTAL]}(#{map(type)}, #{map_arguments_to_array(arguments)})"
+  end
+
+  def function_countifs(count_range,*criteria)
+    "#{FUNCTIONS[:COUNTIFS]}(#{map(count_range)}, #{map_arguments_to_array(criteria)})"
   end
 
   def function_sumifs(sum_range,*criteria)

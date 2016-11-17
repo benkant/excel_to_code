@@ -48,7 +48,11 @@ class ReplaceArraysWithSingleCellsAst
         map_if_required(strings)
       end
     when :function
-      if ast[1] == :SUMIF && ast[3].first == :array
+      if ast[1] == :COUNTIF && ast[3].first == :array
+        ast[3] = try_and_convert_array(ast[3])
+      elsif ast[1] == :COUNTIFS && check_countifs(ast)
+        # Replacement madein check_sumif function
+      elsif ast[1] == :SUMIF && ast[3].first == :array
         ast[3] = try_and_convert_array(ast[3])
       elsif ast[1] == :SUMIFS && check_sumifs(ast)
         # Replacement madein check_sumif function
