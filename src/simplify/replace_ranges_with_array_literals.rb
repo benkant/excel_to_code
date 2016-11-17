@@ -19,6 +19,8 @@ class ReplaceRangesWithArrayLiteralsAst
     when :function;
       if ast[1] == :SUMIF
         return sumif(ast)
+      elsif ast[1] == :COUNTIF
+        return countif(ast)
       else
         map_args(ast)
       end
@@ -37,6 +39,8 @@ class ReplaceRangesWithArrayLiteralsAst
       when :function
         if ast[1] == :sumif
           ast[i] = sumif(a)
+        elsif ast[1] == :countif
+          ast[i] = countif(a)
         else
           do_map(a) 
         end
@@ -67,6 +71,32 @@ class ReplaceRangesWithArrayLiteralsAst
       ast[4][2] = new_sum_area
     else
       ast[4] = new_sum_area
+    end
+    map_args(ast)
+  end
+
+  # ARGH: COUNTIF(A1:A10, 10, B5:B6) is interpreted by Excel as COUNTIF(A1:A10, 10, B5:B15)
+  # HAHA I DUNNO LOL
+  def countif(ast)
+    # If only two arguments to COUNTIF, won't be a problem
+    return map_args(ast) unless ast.length == 5
+    check_range, criteria, count_range = ast[2], ast[3], ast[4]
+    return map_args(ast) unless [:area, :sheet_reference, :cell].include?(check_range.first)
+    return map_args(ast) unless [:area, :sheet_reference, :cell].include?(count_range.first)
+    check_area = area_for(check_range).unfix
+    count_area = area_for(count_range).unfix
+
+    check_area.calculate_excel_variables
+    count_area.calculate_excel_variables
+
+    return map_args(ast) if check_area.height  == count_area.height && check_area.width == count_area.width
+
+    new_count_area = [:area, count_area.excel_start.to_sym, count_area.excel_start.offset(check_area.height, check_area.width).to_sym]
+
+    if count_range.first == :sheet_reference
+      ast[4][2] = new_count_area
+    else
+      ast[4] = new_count_area
     end
     map_args(ast)
   end

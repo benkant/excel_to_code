@@ -107,6 +107,18 @@ class AstExpandArrayFormulae
   def map_index(ast)
     array_map ast, true, false, false
   end
+ 
+  def map_countif(ast)
+    array_map ast, true, false, true
+  end
+  
+  def map_countifs(ast)
+    if ast.length > 5
+      array_map ast, true, true, false, *([true,false]*((ast.length-5)/2))
+    else
+      array_map ast, true, true, false
+    end
+  end
   
   def map_sumif(ast)
     array_map ast, true, false, true
